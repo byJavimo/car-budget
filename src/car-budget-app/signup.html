@@ -1,0 +1,139 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<dom-module id="signup-element">
+    <template>
+        <style>
+        
+        :host {
+            display: block;
+            text-align: center;
+        }
+        paper-card {
+            margin-top: 1.5em;
+            text-align: left;
+            width: 400px;
+            padding: 0 1.5em 1.5em;
+        }
+
+        paper-input:invalid {
+            box-shadow: 0 0 5px 1px red;
+        }
+      
+        paper-button {
+            margin-top: 1.5em; 
+        }
+
+        paper-button#signupButton {
+            background-color: var(--primary-color);
+            position: relative;
+            float: right;
+        }
+
+        paper-button#cancelButton {
+            position: relative;
+            float: right;
+        }
+
+        a {
+            color: red;
+            text-decoration: none;
+        }
+        </style>
+
+        <iron-ajax
+            id="ajaxElement" 
+            url = "http://localhost:3000/users",
+            on-response="_handleResponse"
+            handle-as = "json",
+            loading="{{loading}}",
+            method="POST",
+            content-type= "application/json"
+        ></iron-ajax>
+
+        <app-location route="{{route}}"></app-location>
+
+        <app-route
+            route="{{route}}"
+            pattern="/:page"
+            data="{{routeData}}"
+            tail="{{subroute}}">
+        </app-route>
+
+        <paper-toast id="errorToast" class="fit-bottom" text="Something went wrong when signing up. Please try it again."></paper-toast>
+        
+        <paper-card heading="Sign Up">
+            <form>
+                <div class="card-content">
+                    <paper-input id="name" type="text" label="Name" value="{{name}}" required></paper-input>
+                    <paper-input id="lastname" type="text" label="Lastname" value="{{lastName}}" required></paper-input>
+                    <paper-input id="username" type="text" label="Username" value="{{userName}}"></paper-input>                    
+                    <paper-input id="date" type="date" label="Date" value="{{date}}" required></paper-input>                    
+                    <paper-input id="email" type="email" label="Email" value="{{email}}" required></paper-input>
+                    <paper-input id="password" type="password" label="Password" value="{{password}}" required minlength="8"></paper-input>                
+                </div>
+                <div class="card-actions">
+                    <paper-button id="cancelButton"><a href="login"> Cancel</a></paper-button>                
+                    <paper-button on-click="register" raised id="signupButton"> Sign Up </paper-button>
+                </div>
+            </form>
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+            is:"signup-element",
+            properties: {
+                name: {
+                    type: String
+                },
+                lastName: {
+                    type: String
+                },
+                userName: {
+                    type: String
+                },
+                date: {
+                    type: String
+                },
+                email: {
+                    type: String
+                },
+                password : {
+                    type: String
+                }
+            },
+            register: function(){
+                this.$.ajaxElement.body = {
+                    name: this.name,
+                    lastName: this.lastName,
+                    userName: this.userName,
+                    date: this.date,
+                    email: this.email,
+                    password: this.password
+                }
+                this.$.ajaxElement.generateRequest();
+            },
+            _handleResponse: function(e, request){
+                if(request.succeeded){
+                    this.set("routeData.page", "login")
+                } else {
+                    this.$.errorToast.open();
+                }
+            }
+        })
+    </script>
+</dom-module>

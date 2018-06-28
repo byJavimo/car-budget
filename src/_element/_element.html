@@ -1,0 +1,32 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="car-budget-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CarBudgetApp extends Polymer.Element {
+      static get is() { return 'car-budget-app'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'car-budget-app'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(CarBudgetApp.is, CarBudgetApp);
+  </script>
+</dom-module>

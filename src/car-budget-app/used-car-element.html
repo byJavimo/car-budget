@@ -1,0 +1,207 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/web-animations-js/web-animations-next-lite.min.html">
+
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
+<dom-module id="used-car-element">
+    <template>
+        <style>
+            :host {
+                display: block
+            }
+
+            paper-dropdown-menu, paper-listbox {
+                cursor: pointer;
+                width: 100%;
+            }
+
+            paper-button {
+                background-color: var(--paper-indigo-500) 
+            }
+
+            /* 
+            ##Device = Desktops
+            ##Screen = 1281px to higher resolution desktops
+            */
+
+            @media (min-width: 1281px) {
+                form {
+                    padding: 5em 20em;
+                }
+            }
+        </style>
+
+        <iron-ajax
+            id="ajaxElementPUTuser",
+            method="PUT",
+            handle-as="json",
+            content-type="application/json"
+        >
+        </iron-ajax>
+
+        <form id="usedCarForm" is="iron-form">
+            <div class="card-content">
+                <paper-dropdown-menu id="carBrand" label="Brand" type="text" value="{{brand}}">
+                    <paper-listbox slot="dropdown-content">
+                        <template is="dom-repeat" items="[[cars]]">
+                            <paper-item>[[item.brand]]</paper-item>                        
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu on-click="_getBrandModels" id="carModel" label="Model" type="text" value="{{model}}">
+                    <paper-listbox slot="dropdown-content">
+                        <template is="dom-repeat" items="[[models]]">
+                            <paper-item>[[item]]</paper-item>                        
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-input id="carPrice" type="number" label="Car Price" value="{{price}}"></paper-input>                
+                <paper-input id="date" type="date" label="Date" value="{{date}}"></paper-input>
+                <paper-input id="description" label="Extras/Full description" value="{{description}}"></paper-input>
+                <paper-checkbox id="checkedLoan" on-click="checkLoan"> Loan?</paper-checkbox>                 
+            </div>
+            <template is="dom-if" if="{{checkedLoan}}">
+                    <div class="card-content">
+                            <paper-input id="financierName" label="Financier name" value="{{financierName}}" type="string"></paper-input>
+                            <paper-input id="loanAmount" label="Loan amount" value="{{loanAmount}}" type="number" value-as-number></paper-input>
+                            <paper-input id="loanApperture" type="number" label="Loan apperture" type="number" value="{{loanApperture}}" value-as-number></paper-input>                
+                            <paper-input id="otherFinancialServices" type="number" label="Other financial services" value="{{otherFinancialServices}}" value-as-number></paper-input>
+                            <paper-input id="rate" label="Rate" value="{{rate}}" type="number"></paper-input>   
+                            <paper-input id="loanMonths" label="Loan months" value="{{loanMonths}}" type="number"></paper-input>                                                                 
+                    </div>
+                    <div class="card-actions">
+                        <paper-button id="calculate" on-click="calculate" disabled="{{showAddCarButton}}" raised> Calculate </paper-button>
+                        <template is="dom-if" if="{{showAddCarButton}}">
+                                <paper-button id="addCar" on-click="addCar && resetInputForm" raised> Add car </paper-button>
+                        </template>
+                    </div>
+
+            </template>
+        </form>
+    </template>
+    <script>
+        Polymer({
+            is:"used-car-element",
+            properties: {
+                brand: String,
+                model: String,
+                price: Number,
+                loanAmount: Number,
+                loanApperture: Number,
+                otherFinancialServices: Number,
+                loanMonths: Number,
+                date: Object,
+                description: String,
+                user: Object,
+                car: Object,
+                cars: Object,
+                loan: Object,
+                checkedLoan: false,
+                showAddCarButton: false       
+            },
+
+            ready: function () {
+                this.car = new Object()
+                this.loan = new Object()
+            },
+            
+            addCar: function () {
+                // Set car
+                this.car.brand = this.brand;
+                this.car.model = this.model;
+                this.car.price = this.price;
+                this.car.date = this.date;
+                this.car.description = this.description;
+                this.car.used = true;
+                //Add loan to car loans
+                if(!this.car.loans){
+                    this.car.loans = new Array();
+                }
+                this.car.loans.push(this.loan);
+                // Add car to user
+                if(!this.user.cars){
+                    this.user.cars = new Array();
+                }
+                this.user.cars.push(this.car)
+                this.$.ajaxElementPUTuser.url = "http://localhost:3000/users/"+this.user.id;
+                //Update new user data in sessionstorage window object
+                sessionStorage.setItem("USER AYAYA", this.user);   
+                this.$.ajaxElementPUTuser.body = this.user;             
+                this.$.ajaxElementPUTuser.generateRequest();
+                this.showAddCarButton = false;
+                this.checkedLoan = false;
+                
+            },
+
+            checkLoan: function () {
+                this.checkedLoan = !this.checkedLoan;
+            },
+
+            calculate: function () {
+                //Calculations
+                let firstPaid = this.price - this.loanAmount;
+                this.loanAmount = parseFloat(this.loanAmount);
+                this.loanApperture = parseFloat(this.loanApperture);
+                this.otherFinancialServices = parseFloat(this.otherFinancialServices);
+                this.rate = parseFloat(this.rate);
+                this.loanMonths = parseFloat(this.loanMonths);
+                let monthlyCreditCost = ((this.loanAmount + this.loanApperture + this.otherFinancialServices) * this.rate/100)/this.loanMonths;            
+                console.log("this.loanAmount + this.loanApperture + this.otherFinancialServices =>", this.loanAmount + this.loanApperture + this.otherFinancialServices);
+                console.log("this.rate", this.rate);
+                console.log("RESULT" (this.loanAmount + this.loanApperture + this.otherFinancialServices) * this.rate/100)                
+                console.log("Monthly credit cost =>", monthlyCreditCost)
+                //Set loan details
+                this.loan.financierName = this.financierName;
+                this.loan.loanAmount = this.loanAmount;
+                this.loan.loanApperture = this.loanApperture;
+                this.loan.otherFinancialServices = this.otherFinancialServices;
+                this.loan.rate = this.rate;
+                this.loan.loanMonths = this.loanMonths;
+                this.loan.totalCreditCost = monthlyCreditCost * this.loanMonths + firstPaid;
+                this.loan.monthlyCreditCost = monthlyCreditCost;
+                //Set to be paid in 8 years
+                this.loan.montlyPaid = this.loan.totalCreditCost/(8*12);
+                this.loan.firstPaid = firstPaid;
+                this.showAddCarButton = true;
+            },
+            
+            _getBrandModels: function() {
+                this.cars.forEach(car => {
+                    if(car.brand === this.brand){
+                        this.models = car.models;
+                    }
+                });
+            },
+
+            resetInputForm: function () {
+                console.log("RESET INPUT FORM")
+                // Reset input forms
+                this.brand = null;
+                this.model =  null;
+                this.price = null;
+                this.date = null;
+                this.description = null;
+                this.financierName = null;
+                this.loanAmount = null;
+                this.loanApperture = null;
+                this.otherFinancialServices = null;
+                this.rate = null;
+                this.loanMonths = null;
+            }
+        })
+    </script>
+</dom-module>

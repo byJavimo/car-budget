@@ -1,0 +1,6 @@
+{
+  "name": "car-budget",
+  "short_name": "car-budget",
+  "start_url": "/",
+  "display": "standalone"
+}

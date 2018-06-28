@@ -1,0 +1,123 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<dom-module id="login-element">
+    <template>
+        <style>
+
+        :host {
+            display: block;
+            text-align: center;
+            --paper-toast-background-color: red;
+        }
+        paper-card {
+            margin-top: 1.5em;
+            text-align: left;
+            width: 400px;
+            padding: 0 1.5em 1.5em;
+        }
+      
+        paper-button {
+            margin-top: 1.5em; 
+        }
+
+        paper-button#loginButton {
+            background-color: var(--paper-indigo-500);
+            color: #fff;
+            position: relative;
+            float: right;
+        }
+
+        p.sign-up {
+            font-size: 0.9em;
+        }
+        </style>
+
+        <iron-ajax
+            id="ajaxElement" 
+            url = "http://localhost:3000/users",
+            on-response="_handleResponse"
+            handle-as = "json",
+            loading="{{loading}}",
+        ></iron-ajax>
+        
+        <app-location route="{{route}}"></app-location>
+
+        <app-route
+            route="{{route}}"
+            pattern="/:page"
+            data="{{routeData}}"
+            tail="{{subroute}}">
+        </app-route>
+
+        <paper-toast id="errorToast" class="fit-bottom" text="Either you email or your password is incorrect,please check them out again!"></paper-toast>
+
+        <paper-spinner alt="Loading" active="[[loading]]" class="thin"></paper-spinner>
+
+        <paper-card hidden="[[loading]]" heading="Login">
+            <form name="loginForm">
+                <div class="card-content">
+                    <paper-input id="email" type="email" label="Email" value="{{email}}" required validate></paper-input>
+                    <paper-input id="password" type="password" label="Password" value="{{password}}" required validate></paper-input>                
+                </div>
+                <div class="card-actions">
+                    <paper-button on-tap="login" raised id="loginButton"> Login </paper-button>
+                </div>
+            </form>
+        </paper-card>
+    
+        <p class="sign-up">Not signed-up yet? Click <a href="signup"> here</a></p>                        
+
+    </template>
+    <script>
+        Polymer({
+            is:"login-element",
+            properties: {
+                email: {
+                    type: String
+                },
+                password: {
+                    type: String
+                },
+                user: {
+                    type: Object,
+                    notify: true
+                }
+            },
+            login: function () {
+                let emailInputValidate = this.$.email.validate();
+                let passwordInputValidate = this.$.password.validate();
+                if(emailInputValidate && passwordInputValidate){
+                    this.$.ajaxElement.generateRequest();
+                }                 
+            },
+
+            _handleResponse: function (e, request) {
+                let users = request.response;
+                users.forEach(user => {
+                    if(user.email === this.email && user.password === this.password){
+                        this.set("routeData.page", "home");
+                        this.set('user', user);
+                        //Save user data in sessionstorage window object
+                        sessionStorage.setItem('user', user);           
+                    } else {
+                        this.$.errorToast.open();
+                    }
+                });
+            }
+        })
+    </script>
+</dom-module>

@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": 0,
+      "name": "Pepe",
+      "lastName": "Villuela",
+      "userName": "pvilluela",
+      "img": "",
+      "email": "pepe@gmail.com",
+      "password": "1234"
+    },
+    {
+      "id": 1,
+      "name": "María",
+      "lastName": "Villuela",
+      "userName": "mvilluela",
+      "img": "",
+      "email": "maria@gmail.com",
+      "password": "1234"
+    },
+    {
+      "id": 2,
+      "name": "Juan",
+      "lastName": "Villuela",
+      "userName": "jvilluela",
+      "img": "",
+      "email": "juan@gmail.com",
+      "password": "1234"
+    }
+  ],
+  "cars": [
+    {
+      "brand": "Audi",
+      "models": [
+        "A1",
+        "A3",
+        "A4",
+        "A5"
+      ]
+    },
+    {
+      "brand": "BMW",
+      "models": [
+        "Serie 1",
+        "Serie 2",
+        "Serie 3",
+        "Serie 4"
+      ]
+    },
+    {
+      "brand": "Mercedes-benz",
+      "models": [
+        "A",
+        "B",
+        "CLA",
+        "C"
+      ]
+    }
+  ]
+}

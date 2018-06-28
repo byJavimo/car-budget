@@ -1,0 +1,136 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/web-animations-js/web-animations-next-lite.min.html">
+
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
+
+
+<dom-module id="new-car-element">
+    <template>
+        <style>
+            :host {
+                display: block;
+          
+            }
+
+            paper-dropdown-menu {
+                width: 100%;
+            }
+
+            paper-button {
+                background-color: var(--paper-indigo-500); 
+            }
+
+            /* 
+            ##Device = Desktops
+            ##Screen = 1281px to higher resolution desktops
+            */
+
+            @media (min-width: 1281px) {
+                form {
+                    padding: 5em 20em;
+                }
+            }
+
+        </style>
+
+        <iron-ajax
+            id="ajaxElementPUT",
+            handle-as = "json",
+            method="PUT",
+            content-type="application/json"
+        ></iron-ajax>
+
+   
+        <form>
+            <div class="card-content">
+                <paper-dropdown-menu id="carBrand" label="Brand" type="text" value="{{brand}}">
+                    <paper-listbox slot="dropdown-content">
+                        <template is="dom-repeat" items="[[cars]]">
+                            <paper-item>[[item.brand]]</paper-item>                        
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu on-click="_getBrandModels" id="carModel" label="Model" type="text" value="{{model}}">
+                    <paper-listbox slot="dropdown-content">
+                        <template is="dom-repeat" items="[[models]]">
+                            <paper-item>[[item]]</paper-item>                        
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>                
+                <paper-input id="carPrice" type="number" label="Car Price" value="{{price}}"></paper-input>                
+                <paper-input id="date" type="date" label="Date" value="{{date}}"></paper-input>
+                <paper-input id="description" label="Extras/Full description" value="{{description}}"></paper-input>                                                        
+            </div>
+            <div class="card-actions">
+                <paper-button on-click="addCar" raised id="addCar"> Add </paper-button>
+            </div>
+        </form>
+        
+    </template>
+    <script>
+        Polymer({
+            is:"new-car-element",
+            properties: {
+                brand: String,
+                model: String,
+                price: Number,
+                date: Object,
+                description: String,
+                user: Object
+            },
+
+            addCar: function () {
+                // Set car 
+                let car = new Object();
+                car.brand = this.brand;
+                car.model = this.model;
+                car.price = this.price;
+                car.date = this.date;
+                car.description = this.description;
+                car.used = false;
+                // Add car to user
+                if(!this.user.cars){
+                    this.user.cars = new Array();
+                }
+                this.user.cars.push(car);
+                console.log("User in newCar =>", this.user);                
+                this.$.ajaxElementPUT.url = "http://localhost:3000/users/"+this.user.id;
+                this.$.ajaxElementPUT.body = this.user;             
+                this.$.ajaxElementPUT.generateRequest();
+                //Update new user data in sessionstorage window object
+                sessionStorage.setItem("user", this.user); 
+                // Reset input forms
+                this.brand = null;
+                this.model =  null;
+                this.price = null;
+                this.date = null;
+                this.description = null; 
+            },
+
+            _getBrandModels: function(){
+                this.cars.forEach(car => {
+                    if(car.brand === this.brand){
+                        this.models = car.models;
+                    }
+                });
+            }
+
+            
+        })
+    </script>
+</dom-module>

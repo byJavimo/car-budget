@@ -1,0 +1,109 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/web-animations-js/web-animations-next-lite.min.html">
+
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
+<dom-module id="user-saved-cars">
+    <template>
+        <style>
+
+        :host {
+            display: block;
+        }
+
+        paper-button {
+            color: #fff;
+            background-color: var(--paper-indigo-500);
+        }
+
+        paper-card {
+            margin: 20% 5%;
+            width: 90%;
+        }
+
+
+        @media (min-width: 1281px) {
+                form {
+                    padding: 5em 20em;
+                }
+            }
+        </style>
+
+        <template is="dom-repeat" items="[[user.cars]]">
+            <paper-card heading="[[item.brand]] - [[item.model]] - [[item.price]]">
+                <div class="card-content">
+                    [[item.description]]
+                    <template is="dom-if" if="{{loanDetails}}">
+                        <h3>Loan details</h3>
+                        <template is="dom-repeat" >
+                            <table>
+                                <tr>
+                                    <th>Bank/Financier</th>
+                                    <th>Loan Apperture</th> 
+                                    <th> Loan Amount</th>
+                                    <th> Other Expenses </th>
+                                    <th> Rate </th>
+                                    <th> Loan months</th>
+                                    <th><b>Monthly credit cost</b></th>
+                                    <th><b>Total credit cost</b></th> 
+                                    <th><b>Paid per month in 8 years</b></th>                                                                       
+                                </tr>
+                                <tr items="[[item.loans]]">
+                                    <td>[[item.financierName]]</td>
+                                    <td>[[item.loanApperture]]</td> 
+                                    <td>[[item.loanAmount]]</td>
+                                    <td>[[item.otherFinancialServices]]</td>
+                                    <td>[[item.rate]]</td>
+                                    <td><b>[[item.monthlyCreditCost]]</b></td>
+                                    <td><b>[[item.totalCreditCost]]</b></td>                                    
+                                    <td><b>[[item.monthlyPaid]]</b></td>
+                                </tr>
+                            </table>
+                        </template>
+                    </template>
+                </div>
+                <div class="card-actions">
+                        <paper-button on-click="showLoanDetails"> Show loan details </paper-button>
+                </div>
+            </paper-card>
+
+        </template>
+
+    </template>
+    <script>
+        Polymer({
+            is:"user-saved-cars",
+            properties: {
+                user: Object,
+                loanDetails: false 
+            },
+            ready: function(){
+                console.log("This.user", this.user);
+                // this.user.cars.forEach(car => {
+                //     car.loans.forEach( loan => {
+                //         console.log("loan Details", loan)
+                //     })
+                // });
+            },
+            showLoanDetails: function () {
+                console.log("Show Loan Details");
+                this.loanDetails = !this.loanDetails;
+                
+            }
+        })
+    </script>
+</dom-module>
