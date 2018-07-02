@@ -10,22 +10,60 @@
       "password": "1234"
     },
     {
+      "name": "Javier",
+      "lastName": "Mora",
+      "userName": "javimo",
+      "date": "2018-06-24",
+      "email": "javier.mora@gmail.com",
+      "password": "1234",
       "id": 1,
-      "name": "María",
-      "lastName": "Villuela",
-      "userName": "mvilluela",
-      "img": "",
-      "email": "maria@gmail.com",
-      "password": "1234"
-    },
-    {
-      "id": 2,
-      "name": "Juan",
-      "lastName": "Villuela",
-      "userName": "jvilluela",
-      "img": "",
-      "email": "juan@gmail.com",
-      "password": "1234"
+      "cars": [
+        {
+          "budgetId": 0,
+          "brand": "Mercedes-benz",
+          "model": "CLA",
+          "price": "37500",
+          "date": "2018-06-29",
+          "description": "https://www.coches.net/km-0/mercedes-benz/clase_cla/madrid/cla_220_d-diesel-de-demostracion-34593839-devn.aspx",
+          "used": true,
+          "loans": [
+            {
+              "financierName": "ING",
+              "loanAmount": 30000,
+              "loanApperture": 0,
+              "otherFinancialServices": 0,
+              "rate": 2.95,
+              "loanMonths": 60,
+              "totalCreditCost": 8385,
+              "monthlyCreditCost": 14.75,
+              "monthlyPaid": 87.34375,
+              "firstPaid": 7500
+            }
+          ]
+        },
+        {
+          "brand": "Volkswagen",
+          "model": "Golf",
+          "price": "15000",
+          "date": "2018-07-01",
+          "description": "Sport",
+          "used": true,
+          "loans": [
+            {
+              "financierName": "ING",
+              "loanAmount": 10000,
+              "loanApperture": 0,
+              "otherFinancialServices": 0,
+              "rate": 2.95,
+              "loanMonths": 36,
+              "totalCreditCost": 5295,
+              "monthlyCreditCost": 8.194444444444445,
+              "monthlyPaid": 55.15625,
+              "firstPaid": 5000
+            }
+          ]
+        }
+      ]
     }
   ],
   "cars": [
@@ -53,7 +91,18 @@
         "A",
         "B",
         "CLA",
-        "C"
+        "C",
+        "C Coupé"
+      ]
+    },
+    {
+      "brand": "Volkswagen",
+      "models": [
+        "Polo",
+        "Golf",
+        "Arteon",
+        "Passat",
+        "Passat Copupé"
       ]
     }
   ]

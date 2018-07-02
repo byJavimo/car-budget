@@ -86,7 +86,7 @@
                     <div class="card-actions">
                         <paper-button id="calculate" on-click="calculate" disabled="{{showAddCarButton}}" raised> Calculate </paper-button>
                         <template is="dom-if" if="{{showAddCarButton}}">
-                                <paper-button id="addCar" on-click="addCar && resetInputForm" raised> Add car </paper-button>
+                                <paper-button id="addCar" on-click="addCar" raised> Add car </paper-button>
                         </template>
                     </div>
 
@@ -121,6 +121,8 @@
             
             addCar: function () {
                 // Set car
+                //Set a random budgetId when creating budget
+                this.budgetId = Math.random();
                 this.car.brand = this.brand;
                 this.car.model = this.model;
                 this.car.price = this.price;
@@ -138,13 +140,12 @@
                 }
                 this.user.cars.push(this.car)
                 this.$.ajaxElementPUTuser.url = "http://localhost:3000/users/"+this.user.id;
-                //Update new user data in sessionstorage window object
-                sessionStorage.setItem("USER AYAYA", this.user);   
+                //Update new user data in sessionstorage window object' 
                 this.$.ajaxElementPUTuser.body = this.user;             
                 this.$.ajaxElementPUTuser.generateRequest();
                 this.showAddCarButton = false;
                 this.checkedLoan = false;
-                
+                this.resetInputForm();
             },
 
             checkLoan: function () {
@@ -159,11 +160,7 @@
                 this.otherFinancialServices = parseFloat(this.otherFinancialServices);
                 this.rate = parseFloat(this.rate);
                 this.loanMonths = parseFloat(this.loanMonths);
-                let monthlyCreditCost = ((this.loanAmount + this.loanApperture + this.otherFinancialServices) * this.rate/100)/this.loanMonths;            
-                console.log("this.loanAmount + this.loanApperture + this.otherFinancialServices =>", this.loanAmount + this.loanApperture + this.otherFinancialServices);
-                console.log("this.rate", this.rate);
-                console.log("RESULT" (this.loanAmount + this.loanApperture + this.otherFinancialServices) * this.rate/100)                
-                console.log("Monthly credit cost =>", monthlyCreditCost)
+                let monthlyCreditCost = ((this.loanAmount + this.loanApperture + this.otherFinancialServices) * this.rate/100)/this.loanMonths;
                 //Set loan details
                 this.loan.financierName = this.financierName;
                 this.loan.loanAmount = this.loanAmount;
@@ -174,7 +171,7 @@
                 this.loan.totalCreditCost = monthlyCreditCost * this.loanMonths + firstPaid;
                 this.loan.monthlyCreditCost = monthlyCreditCost;
                 //Set to be paid in 8 years
-                this.loan.montlyPaid = this.loan.totalCreditCost/(8*12);
+                this.loan.monthlyPaid = this.loan.totalCreditCost/(8*12);
                 this.loan.firstPaid = firstPaid;
                 this.showAddCarButton = true;
             },
@@ -188,7 +185,6 @@
             },
 
             resetInputForm: function () {
-                console.log("RESET INPUT FORM")
                 // Reset input forms
                 this.brand = null;
                 this.model =  null;

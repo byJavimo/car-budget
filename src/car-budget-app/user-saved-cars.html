@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/web-animations-js/web-animations-next-lite.min.html">
 
 <link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <link rel="import" href="../../bower_components/app-route/app-location.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
@@ -25,14 +26,27 @@
             display: block;
         }
 
+        .card-actions > paper-button , paper-icon-button {
+            float: right
+        }
+
         paper-button {
             color: #fff;
             background-color: var(--paper-indigo-500);
         }
 
         paper-card {
-            margin: 20% 5%;
+            margin: 7% 5%;
             width: 90%;
+        }
+
+        table, th {
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
         }
 
 
@@ -43,13 +57,21 @@
             }
         </style>
 
-        <template is="dom-repeat" items="[[user.cars]]">
-            <paper-card heading="[[item.brand]] - [[item.model]] - [[item.price]]">
+        <iron-ajax
+            id="ajaxElementPUTuser",
+            method="PUT",
+            handle-as="json",
+            content-type="application/json"
+        >
+        </iron-ajax>
+
+
+        <template is="dom-repeat" items="[[user.cars]]" as="car">
+            <paper-card heading="[[car.brand]] - [[car.model]] || [[car.price]] €">
                 <div class="card-content">
                     [[item.description]]
                     <template is="dom-if" if="{{loanDetails}}">
                         <h3>Loan details</h3>
-                        <template is="dom-repeat" >
                             <table>
                                 <tr>
                                     <th>Bank/Financier</th>
@@ -62,25 +84,29 @@
                                     <th><b>Total credit cost</b></th> 
                                     <th><b>Paid per month in 8 years</b></th>                                                                       
                                 </tr>
-                                <tr items="[[item.loans]]">
-                                    <td>[[item.financierName]]</td>
-                                    <td>[[item.loanApperture]]</td> 
-                                    <td>[[item.loanAmount]]</td>
-                                    <td>[[item.otherFinancialServices]]</td>
-                                    <td>[[item.rate]]</td>
-                                    <td><b>[[item.monthlyCreditCost]]</b></td>
-                                    <td><b>[[item.totalCreditCost]]</b></td>                                    
-                                    <td><b>[[item.monthlyPaid]]</b></td>
-                                </tr>
+                                <template is="dom-repeat" items="[[car.loans]]" as="loan">
+                                    <tr>
+                                        <td>[[loan.financierName]]</td>
+                                        <td>[[loan.loanApperture]]</td> 
+                                        <td>[[loan.loanAmount]]</td>
+                                        <td>[[loan.otherFinancialServices]]</td>
+                                        <td>[[loan.rate]]</td>
+                                        <td>[[loan.loanMonths]]</td>
+                                        <td><b>[[loan.monthlyCreditCost]]</b></td>
+                                        <td><b>[[loan.totalCreditCost]]</b></td>                                    
+                                        <td><b>[[loan.monthlyPaid]]</b></td>
+                                    </tr>
+                                </template>
                             </table>
-                        </template>
                     </template>
                 </div>
                 <div class="card-actions">
-                        <paper-button on-click="showLoanDetails"> Show loan details </paper-button>
+                    <paper-icon-button on-click="deleteCar"  data-car$="[[car]]" icon="delete-forever"></paper-icon-button>
+                    <paper-button on-click="showLoanDetails" hidden="{{loanDetails}}"> Show loan details </paper-button>
+                    <paper-button on-click="showLoanDetails" hidden="{{!loanDetails}}"> Hide loan details </paper-button>
+                    <paper-button on-click="editCarDetails"> Edit car details </paper-button>
                 </div>
             </paper-card>
-
         </template>
 
     </template>
@@ -88,22 +114,42 @@
         Polymer({
             is:"user-saved-cars",
             properties: {
-                user: Object,
-                loanDetails: false 
+                user: Object
             },
+
             ready: function(){
-                console.log("This.user", this.user);
-                // this.user.cars.forEach(car => {
-                //     car.loans.forEach( loan => {
-                //         console.log("loan Details", loan)
-                //     })
-                // });
+                this.loanDetails = false;
             },
+
             showLoanDetails: function () {
-                console.log("Show Loan Details");
                 this.loanDetails = !this.loanDetails;
-                
+            },
+
+
+
+            deleteCar: function (event) {
+                const carToDelete = event.target.dataset.car;
+                let newArrayOfCars = this.user.cars.filter(car => {
+                    console.log("car.budgetId =>", car.budgetId);
+                    console.log("carToDelete.budgetId =>", carToDelete.budgetId);
+                    return car.budgetId !== carToDelete.budgetId
+                })
+                console.log("New array of cars =>", newArrayOfCars)
+                this.user.cars = newArrayOfCars;
+                console.log("This.user.cars =>", this.user.cars);
+
+                // this.$.ajaxElementPUTuser.url = "http://localhost:3000/users/"+this.user.id;
+                // this.$.ajaxElementDeleteCar.generateRequest();
+            },
+
+            editCarDetails: function (carToEdit){
+                this.user.cars.forEach(car => {
+                    if(car.budgetId === carToEdit.budgetId){
+                        console.log("Car to edit =>", carToEdit);
+                    }
+                });
             }
+
         })
     </script>
 </dom-module>
